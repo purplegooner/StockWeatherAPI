@@ -1,0 +1,59 @@
+<?php
+  header('conternt-Type: application/json');
+  //stores search params
+  $stock = $_GET["stock"];
+  $location = $_GET["location"];
+  $locationStatus;
+
+  $stock_symbol = getStockData($stock);
+  searchLocation($location);
+
+  function getStockData($company){
+    $url = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=".$company."&callback=YAHOO.Finance.SymbolSuggest.ssCallback";
+    $rawJson = fileGetContents($url);
+    $fixedJson = explode("(",$rawJson);
+    $fixedJson = explode(")", $fixedJson[1]);
+    $fixedJson = $fixedJson[0];
+    $JSON = json_decode($fixedJson);
+
+    $symbol = $JSON->ResultSet->Result[0]->symbol;
+
+    return $symbol;
+  }
+
+  function searchLocation($_location){
+    global $locationStatus;
+    $url = "http://api.wunderground.com/api/d8d8c5e34649bbd5/conditions/q/".$_location.".json";
+    $rawJson = fileGetContents($url);
+    $JSON = json_decode($rawJson);
+    $errors = $JSON->response->error;
+    $results = $JSON->response->results;
+    if (count($errors)>0){
+      //echo("There Was An Error");
+      $locationStatus = "error";
+    }elseif(count($results)>0){
+      //echo("multipleLocationsFound");
+      $locationStatus = "multiple";
+    }else{
+      //echo("Weather Data Was Found");
+      $locationStatus = "data";
+    }
+  }
+
+  function getWeatherData($location){
+
+  }
+
+  /*
+  *Rename file_get_contents to fileGetContents
+  * @param {string} $file - @see file_get_contents
+  */
+  function fileGetContents($file){
+    $returned = file_get_contents($file);
+    return $returned;
+  }
+?>
+{
+  "status" :"<?php echo($locationStatus); ?>",
+  "symbol" :"<?php echo($stock_symbol); ?>"
+}
