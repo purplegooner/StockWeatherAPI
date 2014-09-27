@@ -21,6 +21,12 @@
     return $symbol;
   }
 
+
+  /*
+  * Searches Locations and checks if there are
+  * multiple found, weather data retrieved, or an error
+  * @param {string} $_location - locationSearchQuery
+  */
   function searchLocation($_location){
     global $locationStatus;
     $url = "http://api.wunderground.com/api/d8d8c5e34649bbd5/conditions/q/".$_location.".json";
