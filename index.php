@@ -29,6 +29,8 @@
   */
   function searchLocation($_location){
     global $locationStatus;
+    global $currentWeather;
+    global $results;
     $url = "http://api.wunderground.com/api/d8d8c5e34649bbd5/conditions/q/".$_location.".json";
     $rawJson = fileGetContents($url);
     $JSON = json_decode($rawJson);
@@ -43,6 +45,7 @@
     }else{
       //echo("Weather Data Was Found");
       $locationStatus = "data";
+      $currentWeather = $JSON->current_observation;
     }
   }
 
@@ -60,6 +63,11 @@
   }
 ?>
 {
-  "status" :"<?php echo($locationStatus); ?>",
-  "symbol" :"<?php echo($stock_symbol); ?>"
+  "status" : "<?php echo($locationStatus); ?>",
+  "symbol" : "<?php echo($stock_symbol); ?>"<?php if($locationStatus != "error"){ echo(","); }
+
+  if($locationStatus == "data"){ ?>
+    "city" : "<?php echo($currentWeather->display_location->city); ?>"
+  <?php }else if($locationStatus == "multiple"){ ?>
+  <?php } ?>
 }
