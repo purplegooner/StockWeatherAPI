@@ -67,7 +67,25 @@
   "symbol" : "<?php echo($stock_symbol); ?>"<?php if($locationStatus != "error"){ echo(","); }
 
   if($locationStatus == "data"){ ?>
-    "city" : "<?php echo($currentWeather->display_location->city); ?>"
-  <?php }else if($locationStatus == "multiple"){ ?>
+    "city" : "<?php echo($currentWeather->display_location->city); ?>",
+    "temperature" : "<?php echo($currentWeather->temp_f); ?>",
+    "visibility" : "<?php echo($currentWeather->visibility_mi); ?>",
+    "windSpeed" : "<?php echo($currentWeather->wind_mph); ?>",
+    "windDirection" : "<?php echo($currentWeather->wind_degrees); ?>"
+  <?php
+}else if($locationStatus == "multiple"){ ?>
+    "locations" : [
+    <?php $i = 0;
+    foreach($results as $loc){
+      if($i<3){
+        $i++; ?>
+        {
+          "id" : "<?php echo($loc->zmw); ?>",
+          "city" : "<?php echo($loc->city); ?>",
+          "state" : "<?php echo($loc->state); ?>",
+          "country" : "<?php echo($loc->country); ?>"
+        }<?php if($i!=3){ echo(","); } ?>
+  <?php }
+    } ?>]
   <?php } ?>
 }
